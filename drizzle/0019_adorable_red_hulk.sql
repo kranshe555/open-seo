@@ -1,0 +1,1 @@
+ALTER TABLE `audit_pages` ADD `coupon_audit_json` text;

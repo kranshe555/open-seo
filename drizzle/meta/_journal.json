@@ -134,6 +134,13 @@
       "when": 1779849000462,
       "tag": "0018_minor_mad_thinker",
       "breakpoints": true
+    },
+    {
+      "idx": 19,
+      "version": "6",
+      "when": 1780595091867,
+      "tag": "0019_adorable_red_hulk",
+      "breakpoints": true
     }
   ]
 }
