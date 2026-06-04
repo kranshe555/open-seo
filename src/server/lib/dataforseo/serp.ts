@@ -127,7 +127,7 @@ export async function fetchRankCheckSerp(input: {
       keywordId: input.keywordId,
       keyword: input.keyword,
       position: organicMatch
-        ? (organicMatch.rank_absolute ?? organicMatch.rank_group ?? null)
+        ? (organicMatch.rank_group ?? organicMatch.rank_absolute ?? null)
         : null,
       url: organicMatch?.url ?? null,
       serpFeatures: [
