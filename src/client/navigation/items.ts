@@ -8,6 +8,7 @@ import {
   Search,
   Sparkles,
   TrendingUp,
+  BarChart3,
 } from "lucide-react";
 import { linkOptions } from "@tanstack/react-router";
 
@@ -47,6 +48,12 @@ const projectNavItems = [
     label: "Site Audit",
     icon: ClipboardCheck,
     matchSegment: "/audit",
+  },
+  {
+    to: "/p/$projectId/performance" as const,
+    label: "Performance Reports",
+    icon: BarChart3,
+    matchSegment: "/performance",
   },
   {
     to: "/p/$projectId/brand-lookup" as const,
@@ -99,11 +106,12 @@ export function getProjectNavGroups(projectId: string) {
       type: "group" as const,
       label: "Domain",
       icon: Globe,
-      matchSegments: ["/domain", "/backlinks", "/audit"],
+      matchSegments: ["/domain", "/backlinks", "/audit", "/performance"],
       items: [
         bySegment("/domain"),
         bySegment("/backlinks"),
         bySegment("/audit"),
+        bySegment("/performance"),
       ],
     },
     {
