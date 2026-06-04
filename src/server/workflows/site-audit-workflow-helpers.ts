@@ -1,4 +1,5 @@
 import { analyzeHtml } from "@/server/lib/audit/page-analyzer";
+import { auditCouponPage } from "@/server/lib/audit/CouponAuditor";
 import type { StepPageResult } from "@/server/lib/audit/types";
 import { isSameOrigin, normalizeUrl } from "@/server/lib/audit/url-utils";
 
@@ -47,6 +48,11 @@ export async function crawlPage(
     const h5Count = analysis.headingOrder.filter((h) => h === 5).length;
     const h6Count = analysis.headingOrder.filter((h) => h === 6).length;
 
+    const couponAuditResult = auditCouponPage(html, finalUrl);
+    const couponAuditJson = couponAuditResult.isCouponOrStorePage
+      ? JSON.stringify(couponAuditResult)
+      : null;
+
     return {
       id: crypto.randomUUID(),
       url: finalUrl,
@@ -78,6 +84,7 @@ export async function crawlPage(
       hreflangTags: analysis.hreflangTags,
       isIndexable,
       responseTimeMs,
+      couponAuditJson,
     };
   } catch (error) {
     const responseTimeMs = Date.now() - startTime;

@@ -423,6 +423,8 @@ export const auditPages = sqliteTable(
       .default(true),
     // Performance
     responseTimeMs: integer("response_time_ms"),
+    // Coupon/Affiliate Specialized Audit
+    couponAuditJson: text("coupon_audit_json"),
   },
   (table) => [index("audit_pages_audit_id_idx").on(table.auditId)],
 );

@@ -6,6 +6,7 @@ import {
 } from "@tanstack/react-table";
 import { Link } from "@tanstack/react-router";
 import { ExternalLink } from "lucide-react";
+import { Modal } from "@/client/components/Modal";
 import {
   AppDataTable,
   useAppTable,
@@ -41,6 +42,89 @@ import {
 
 const pageColumnHelper = createColumnHelper<PageRow>();
 const performanceColumnHelper = createColumnHelper<PerformanceRowData>();
+
+function CouponAuditCell({ couponAuditJson }: { couponAuditJson?: string | null }) {
+  const [isOpen, setIsOpen] = useState(false);
+
+  if (!couponAuditJson) {
+    return <span className="text-xs text-base-content/30">-</span>;
+  }
+
+  let report: any;
+  try {
+    report = JSON.parse(couponAuditJson);
+  } catch (e) {
+    return <span className="text-xs text-error">error</span>;
+  }
+
+  const { summary, results, pageType } = report;
+  const score = summary.score;
+
+  let badgeColor = "bg-success";
+  if (score < 5) badgeColor = "bg-error";
+  else if (score < 8) badgeColor = "bg-warning";
+
+  return (
+    <>
+      <button
+        onClick={() => setIsOpen(true)}
+        className={`badge ${badgeColor} gap-1 cursor-pointer hover:scale-105 transition-transform font-bold text-white border-none py-2.5 px-2.5`}
+      >
+        {pageType === "store" ? "Store" : "Coupon"}: {score}/10
+      </button>
+
+      {isOpen && (
+        <Modal maxWidth="max-w-2xl" onClose={() => setIsOpen(false)}>
+          <div className="flex justify-between items-center border-b border-base-200 pb-3" dir="rtl">
+            <h3 className="font-bold text-lg text-primary">
+              📋 فحص السيو لمواقع الكوبونات ({pageType === "store" ? "صفحة متجر" : "صفحة كوبون"})
+            </h3>
+            <span className={`badge ${badgeColor} badge-lg text-white font-bold border-none`}>
+              التقييم: {score}/10
+            </span>
+          </div>
+
+          <div className="max-h-[60vh] overflow-y-auto space-y-3 pr-1 py-2 text-right" dir="rtl">
+            <div className="grid grid-cols-3 gap-2 bg-base-200 p-3 rounded-lg text-xs font-bold text-center">
+              <div>البنود المجتازة: {summary.passedCount}</div>
+              <div>البنود الفاشلة: {summary.failedCount}</div>
+              <div>إجمالي البنود: {results.length}</div>
+            </div>
+
+            <div className="space-y-2">
+              {results.map((rule: any, idx: number) => (
+                <div
+                  key={idx}
+                  className={`p-3 rounded-lg border text-sm flex flex-col gap-1 ${
+                    rule.passed
+                      ? "bg-success/10 border-success/30 text-success-content"
+                      : "bg-error/10 border-error/30 text-error-content"
+                  }`}
+                >
+                  <div className="flex justify-between items-center font-bold">
+                    <span>{rule.name}</span>
+                    <span className={`badge ${rule.passed ? "badge-success text-white" : "badge-error text-white"} badge-xs border-none`}>
+                      {rule.passed ? "ناجح" : "فشل"}
+                    </span>
+                  </div>
+                  <div className="text-xs opacity-90 font-mono mt-1 whitespace-pre-line leading-relaxed">
+                    {rule.details}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="modal-action mt-2 justify-end flex">
+            <button className="btn btn-sm" onClick={() => setIsOpen(false)}>
+              إغلاق
+            </button>
+          </div>
+        </Modal>
+      )}
+    </>
+  );
+}
 
 const pagesColumns: ColumnDef<PageRow>[] = [
   pageColumnHelper.accessor("url", {
@@ -112,6 +196,10 @@ const pagesColumns: ColumnDef<PageRow>[] = [
       );
     },
     sortingFn: nullableNumberSort,
+  }),
+  pageColumnHelper.accessor("couponAuditJson", {
+    header: ({ column }) => <SortableHeader column={column} label="Coupon Audit" />,
+    cell: ({ getValue }) => <CouponAuditCell couponAuditJson={getValue()} />,
   }),
 ];
 

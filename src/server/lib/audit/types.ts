@@ -109,4 +109,5 @@ export interface StepPageResult {
   hreflangTags: string[];
   isIndexable: boolean;
   responseTimeMs: number;
+  couponAuditJson?: string | null;
 }

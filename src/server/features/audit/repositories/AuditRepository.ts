@@ -161,6 +161,7 @@ async function batchWriteResults(
       hreflangTagsJson: JSON.stringify(page.hreflangTags),
       isIndexable: page.isIndexable,
       responseTimeMs: page.responseTimeMs,
+      couponAuditJson: page.couponAuditJson ?? null,
     }),
   );
 
